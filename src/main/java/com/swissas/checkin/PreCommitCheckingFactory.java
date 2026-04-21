@@ -11,7 +11,10 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.vcsUtil.VcsUtil;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
+
 
 /**
  * The pre-commit checking factory class
@@ -21,7 +24,13 @@ class PreCommitCheckingFactory extends CheckinHandlerFactory {
     @NotNull
     @Override
     public CheckinHandler createHandler(@NotNull CheckinProjectPanel panel, @NotNull CommitContext commitContext) {
-        VirtualFile file = panel.getVirtualFiles().stream().findFirst().orElse(null);
+        Collection<VirtualFile> virtualFiles;
+        try {
+            virtualFiles = panel.getVirtualFiles();
+        } catch (Exception e) {
+            virtualFiles = Collections.emptyList();
+        }
+        VirtualFile file = virtualFiles.stream().findFirst().orElse(null);
         boolean isGit = false;
         if(file != null) {
             FilePath filePath = VcsUtil.getFilePath(file.getPath());

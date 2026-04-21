@@ -42,7 +42,17 @@ public class WarningContent extends JBTabbedPane implements ToolWindowFactory {
 	private Project                    project;
 
 	private static final String USERNAME = "jenkinsreadonly";
-	private static final String TOKEN = ResourceBundle.getBundle("token").getString("finding_token");
+	private static final String TOKEN;
+
+	static {
+		String token = "";
+		try {
+			token = ResourceBundle.getBundle("token").getString("finding_token");
+		} catch (MissingResourceException e) {
+			Logger.getInstance("Swiss-as").warn("token.properties not found, findings will not be loaded");
+		}
+		TOKEN = token;
+	}
 
 	
 	@Override

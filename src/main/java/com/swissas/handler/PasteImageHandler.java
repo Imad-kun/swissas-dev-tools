@@ -44,11 +44,8 @@ public class PasteImageHandler extends EditorActionHandler implements EditorText
 	protected void doExecute(@NotNull Editor editor, @Nullable Caret caret,
 	                         DataContext dataContext) {
 		Transferable transferable = CopyPasteManager.getInstance().getContents();
-		if(transferable == null){
-			return;
-		}
 		
-		if(transferable.isDataFlavorSupported(DataFlavor.imageFlavor) && editor.getComponent() instanceof DragDropTextPane) {
+		if(transferable != null && transferable.isDataFlavorSupported(DataFlavor.imageFlavor) && editor.getComponent() instanceof DragDropTextPane) {
 			Image imageFromClipboard = ImageUtility.getInstance().getImageFromClipboard();
 			if (imageFromClipboard != null) {
 				DragDropTextPane dropTextPane = (DragDropTextPane)editor.getComponent();

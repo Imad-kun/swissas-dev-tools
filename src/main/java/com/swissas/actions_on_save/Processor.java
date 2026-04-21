@@ -9,7 +9,6 @@ import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import com.siyeh.ig.inheritance.MissingOverrideAnnotationInspection;
-import com.siyeh.ig.maturity.SuppressionAnnotationInspection;
 import com.siyeh.ig.style.UnqualifiedFieldAccessInspection;
 import com.swissas.inspection.MissingAuthorInspection;
 import com.swissas.inspection.ReplaceWithTeamAuthorInspection;
@@ -31,8 +30,6 @@ public enum Processor {
 				missingOverrideAnnotationInspection.ignoreObjectMethods = false;
 				return missingOverrideAnnotationInspection;
 			}),
-	SUPPRESS_ANNOTATION(InspectionAction.SUPPRESS_ANNOTATION,
-	                    SuppressionAnnotationInspection::new),
 	MISSING_AUTHOR(InspectionAction.MISSING_AUTHOR, MissingAuthorInspection::new),
 	USE_TEAM_AUTHOR(InspectionAction.USE_TEAM_AUTHOR, ReplaceWithTeamAuthorInspection::new)
 	;

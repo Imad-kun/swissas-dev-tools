@@ -32,8 +32,11 @@ class TranslateGoToDeclaration implements GotoDeclarationHandler {
 			if (language.equals(JavaLanguage.INSTANCE) && elementType.toString()
 			                                                         .equals("IDENTIFIER")
 			    && TranslationDocumentationProvider.isSasMultiLang(sourceElement)) {
-				PropertiesFile currentPropertiesFile = (PropertiesFile) sourceElement.getContainingFile()
-				                                             .getContainingDirectory()
+				var containingDirectory = sourceElement.getContainingFile().getContainingDirectory();
+				if (containingDirectory == null) {
+					return new PsiElement[0];
+				}
+				PropertiesFile currentPropertiesFile = (PropertiesFile) containingDirectory
 				                                             .findFile("Standard.properties");
 				return Optional.ofNullable(currentPropertiesFile)
 				        .map(f -> f.findPropertyByKey(sourceElement.getText()))
