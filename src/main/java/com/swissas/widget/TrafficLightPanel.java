@@ -18,7 +18,6 @@ import com.intellij.ide.BrowserUtil;
 import com.intellij.ide.ui.UISettings;
 import com.intellij.ide.ui.UISettingsListener;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.fileEditor.FileEditorManagerEvent;
 import com.intellij.openapi.fileEditor.FileEditorManagerListener;
 import com.intellij.openapi.options.ShowSettingsUtil;
@@ -26,9 +25,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.ui.popup.Balloon;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
-import com.intellij.openapi.vcs.AbstractVcsHelper;
 import com.intellij.openapi.vcs.CheckinProjectPanel;
-import com.intellij.openapi.vcs.changes.LocalChangeList;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.CustomStatusBarWidget;
 import com.intellij.openapi.wm.StatusBar;
@@ -195,10 +192,14 @@ public class TrafficLightPanel extends JPanel implements CustomStatusBarWidget, 
     private void displayCommitDialogWhenReady(){
         if(!this.isRedOrYellowOn){
             this.informWhenReady = false;
-            Runnable showCommit = () -> AbstractVcsHelper.getInstance(this.project).commitChanges(this.checkinProjectPanel.getSelectedChanges(), LocalChangeList.createEmptyChangeList(this.project, "")
-                    , this.checkinProjectPanel.getCommitMessage(), null);
-            //as we are in a background task, we need to run the commitChange window in the main thread therefore invokeLater
-            ApplicationManager.getApplication().invokeAndWait(showCommit, ModalityState.NON_MODAL);
+            // Notify user that they can now commit (AbstractVcsHelper.commitChanges removed in 2025.1)
+            ApplicationManager.getApplication().invokeLater(() ->
+                JBPopupFactory.getInstance()
+                    .createHtmlTextBalloonBuilder("Traffic light is green - you can commit now!", MessageType.INFO, null)
+                    .setFadeoutTime(5_000)
+                    .createBalloon()
+                    .show(RelativePoint.getCenterOf(this.getComponent()), Balloon.Position.above)
+            );
         }
     }
 

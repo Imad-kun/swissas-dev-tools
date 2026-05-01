@@ -9,10 +9,7 @@ import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vcs.ex.LineStatusTracker;
-import com.intellij.openapi.vcs.ex.LineStatusTrackerI;
 import com.intellij.openapi.vcs.ex.Range;
-import com.intellij.openapi.vcs.impl.LineStatusTrackerManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import com.swissas.quickfix.MarkAsIgnoredQuickfix;
@@ -85,10 +82,25 @@ class MissingTranslationInspection extends LocalInspectionTool {
 			this.fixes = fixes;
 			VirtualFile virtualFile = holder.getFile().getVirtualFile();
 			Project project = holder.getProject();
-			LineStatusTracker<?> lineStatusTracker = LineStatusTrackerManager.getInstance(project).getLineStatusTracker(virtualFile);
-			this.rangesToCheck = Optional.ofNullable(lineStatusTracker).map(LineStatusTrackerI::getRanges)
-										 .map(ArrayList<Range>::new)
-										 .orElse(new ArrayList<>());
+			List<Range> ranges = new ArrayList<>();
+			try {
+				// LineStatusTrackerManager API changed in 2024.2+; use reflection to stay compatible
+				Class<?> managerClass = Class.forName("com.intellij.openapi.vcs.impl.LineStatusTrackerManager");
+				Object manager = managerClass.getMethod("getInstance", Project.class).invoke(null, project);
+				if (manager != null) {
+					Object tracker = manager.getClass().getMethod("getLineStatusTracker", VirtualFile.class).invoke(manager, virtualFile);
+					if (tracker != null) {
+						@SuppressWarnings("unchecked")
+						List<Range> trackerRanges = (List<Range>) tracker.getClass().getMethod("getRanges").invoke(tracker);
+						if (trackerRanges != null) {
+							ranges.addAll(trackerRanges);
+						}
+					}
+				}
+			} catch (Throwable ignored) {
+				// LineStatusTrackerManager not accessible in this version - fall back to checking all lines
+			}
+			this.rangesToCheck = ranges;
 			this.rangesToCheck.removeIf(e -> e.getType() == Range.DELETED);
 			this.noSvn = this.rangesToCheck.isEmpty();
 		}

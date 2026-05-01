@@ -8,8 +8,9 @@ import javax.swing.Icon;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.Presentation;
-import com.intellij.openapi.vcs.actions.ShowAnnotateOperationsPopup;
+import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.vcs.annotate.FileAnnotation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -38,7 +39,7 @@ public class OpenCaseOrReviewAction extends AnAction {
 	
 	@Override
 	public void update(@NotNull AnActionEvent e) {
-		refreshDataAndFields(ShowAnnotateOperationsPopup.getAnnotationLineNumber(e.getDataContext()));
+		refreshDataAndFields(getAnnotationLineNumber(e));
 		Presentation presentation = e.getPresentation();
 		presentation.setVisible(this.link != null);
 		super.update(e);
@@ -63,5 +64,10 @@ public class OpenCaseOrReviewAction extends AnAction {
 		if (this.link != null) {
 			BrowserUtil.browse(this.link);
 		}
+	}
+
+	public static int getAnnotationLineNumber(@NotNull AnActionEvent e) {
+		Editor editor = e.getData(CommonDataKeys.EDITOR);
+		return editor != null ? editor.getCaretModel().getLogicalPosition().line : 0;
 	}
 }

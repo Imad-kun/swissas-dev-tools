@@ -4,10 +4,10 @@ import java.util.Objects;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.vcs.actions.ShowAnnotateOperationsPopup;
 import com.intellij.openapi.vcs.annotate.AnnotationGutterActionProvider;
 import com.intellij.openapi.vcs.annotate.FileAnnotation;
 import com.intellij.openapi.vcs.history.VcsRevisionNumber;
+import com.swissas.action.OpenCaseOrReviewAction;
 import com.swissas.util.ShowLetterCodeInformationHelper;
 import icons.SwissAsIcons;
 import org.jetbrains.annotations.NotNull;
@@ -40,7 +40,7 @@ public class WhoWroteThisAnnotationProvider implements AnnotationGutterActionPro
 		
 		@Override
 		public void actionPerformed(@NotNull AnActionEvent e) {
-			int lineNumber = ShowAnnotateOperationsPopup.getAnnotationLineNumber(e.getDataContext());
+			int lineNumber = OpenCaseOrReviewAction.getAnnotationLineNumber(e);
 			VcsRevisionNumber lineRevisionNumber = this.annotation.getLineRevisionNumber(lineNumber);
 			String lc = Objects.requireNonNull(this.annotation.getAuthorsMappingProvider())
 			                   .getAuthors().get(lineRevisionNumber);

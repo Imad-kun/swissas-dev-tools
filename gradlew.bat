@@ -29,6 +29,9 @@ if "%DIRNAME%"=="" set DIRNAME=.
 set APP_BASE_NAME=%~n0
 set APP_HOME=%DIRNAME%
 
+@rem Force use of the JBR bundled with IntelliJ 2025.1 (requires Java 21 to compile against IntelliJ 2025.1 JARs)
+set JAVA_HOME=C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2025.1\jbr
+
 @rem Resolve any "." and ".." in APP_HOME to make it shorter.
 for %%i in ("%APP_HOME%") do set APP_HOME=%%~fi
 

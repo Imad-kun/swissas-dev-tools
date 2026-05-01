@@ -1,6 +1,7 @@
 package com.swissas;
 
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.fileEditor.FileDocumentManagerListener;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.ProjectActivity;
 import com.intellij.util.messages.MessageBus;
@@ -12,7 +13,6 @@ import kotlin.coroutines.Continuation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import static com.intellij.AppTopics.FILE_DOCUMENT_SYNC;
 
 public class Startup implements ProjectActivity {
 	
@@ -29,6 +29,6 @@ public class Startup implements ProjectActivity {
 		
 		MessageBus bus = ApplicationManager.getApplication().getMessageBus();
 		MessageBusConnection connection = bus.connect();
-		connection.subscribe(FILE_DOCUMENT_SYNC, manager);
+		connection.subscribe(FileDocumentManagerListener.TOPIC, manager);
 	}
 }
